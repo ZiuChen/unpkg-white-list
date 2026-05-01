@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.296.0 (2026-05-01)
+
+* feat: add `@teamolab/teamo-cli` to allowLargePackages (#562) ([3aad46b](https://github.com/cnpm/unpkg-white-list/commit/3aad46b)), closes [#562](https://github.com/cnpm/unpkg-white-list/issues/562)
+
 ## 1.295.0 (2026-04-30)
 
 * feat: add n8n-editor-ui packages to allowLargePackages whitelist (#559) ([bbf2d7e](https://github.com/cnpm/unpkg-white-list/commit/bbf2d7e)), closes [#559](https://github.com/cnpm/unpkg-white-list/issues/559)
