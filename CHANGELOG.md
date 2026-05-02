@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.297.0 (2026-05-02)
+
+* feat: add @mathjax to allowScopes (#563) ([4e8cc01](https://github.com/cnpm/unpkg-white-list/commit/4e8cc01)), closes [#563](https://github.com/cnpm/unpkg-white-list/issues/563)
+
 ## 1.296.0 (2026-05-01)
 
 * feat: add `@teamolab/teamo-cli` to allowLargePackages (#562) ([3aad46b](https://github.com/cnpm/unpkg-white-list/commit/3aad46b)), closes [#562](https://github.com/cnpm/unpkg-white-list/issues/562)
