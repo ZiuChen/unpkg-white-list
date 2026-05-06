@@ -4,22 +4,44 @@ const { readFileSync, writeFileSync } = require('node:fs');
 const { dirname, join } = require('node:path');
 const semverValidRange = require('semver/ranges/valid');
 
-const pkgFile = join(dirname(__dirname), 'package.json');
-const pkg = JSON.parse(readFileSync(pkgFile, 'utf-8'));
-// format the package.json
-writeFileSync(pkgFile, JSON.stringify(pkg, null, 2) + '\n');
+const ROOT = dirname(__dirname);
+const pkgFile = join(ROOT, 'package.json');
+const dataDir = join(ROOT, 'data');
+
+function readAndNormalize(file) {
+  const original = readFileSync(file, 'utf-8');
+  const value = JSON.parse(original);
+  const formatted = JSON.stringify(value, null, 2) + '\n';
+  if (formatted !== original) {
+    writeFileSync(file, formatted);
+  }
+  return value;
+}
+
+const pkg = readAndNormalize(pkgFile);
+
+function loadList(name) {
+  return readAndNormalize(join(dataDir, `${name}.json`));
+}
+
+const allowPackages = loadList('allowPackages');
+const allowScopes = loadList('allowScopes');
+const allowLargePackages = loadList('allowLargePackages');
+const allowLargeScopes = loadList('allowLargeScopes');
+const blockSyncPackages = loadList('blockSyncPackages');
+const blockSyncScopes = loadList('blockSyncScopes');
 
 test('should pkg.allowPackages work', () => {
   assert(pkg.files);
   assert.equal(pkg.files.length, 0);
-  assert(pkg.allowPackages);
-  assert.equal(typeof pkg.allowPackages, 'object');
+  assert(allowPackages);
+  assert.equal(typeof allowPackages, 'object');
   let packages = 0;
-  for (const name in pkg.allowPackages) {
+  for (const name in allowPackages) {
     packages++;
     assert(name);
     assert.equal(typeof name, 'string');
-    const config = pkg.allowPackages[name];
+    const config = allowPackages[name];
     assert(config);
     assert.equal(typeof config, 'object');
     assert(config.version);
@@ -33,15 +55,15 @@ test('should pkg.allowPackages work', () => {
 });
 
 test('should pkg.allowScopes work', () => {
-  assert(pkg.allowScopes);
-  assert.equal(typeof pkg.allowScopes, 'object');
+  assert(allowScopes);
+  assert(Array.isArray(allowScopes), 'allowScopes should be an array');
   let scopes = 0;
-  for (const name of pkg.allowScopes) {
+  for (const name of allowScopes) {
     scopes++;
     assert(name);
     assert.equal(typeof name, 'string');
     assert.match(name, /^@.+/);
-    assert.equal(pkg.allowScopes.filter(n => n === name).length, 1, `"${name}" is duplicate`);
+    assert.equal(allowScopes.filter(n => n === name).length, 1, `"${name}" is duplicate`);
   }
   console.log('Total %d scopes', scopes);
   assert(scopes > 0);
@@ -51,10 +73,10 @@ test('should pkg.allowScopes work', () => {
 // 例如：@babel 已存在，那么 @babel/core 就不需要再添加
 test('check allowPackages and allowScopes', () => {
   const duplicatedPackages = new Map();
-  for (const name in pkg.allowPackages) {
+  for (const name in allowPackages) {
     if (name.startsWith('@')) {
       const [scope] = name.split('/');
-      if (pkg.allowScopes.includes(scope)) {
+      if (allowScopes.includes(scope)) {
         duplicatedPackages.set(scope, [
           ...(duplicatedPackages.get(scope) || []),
           name
@@ -73,14 +95,14 @@ test('check allowPackages and allowScopes', () => {
 });
 
 test('should pkg.allowLargePackages work', () => {
-  assert(pkg.allowLargePackages);
-  assert.equal(typeof pkg.allowLargePackages, 'object');
+  assert(allowLargePackages);
+  assert.equal(typeof allowLargePackages, 'object');
   let packages = 0;
-  for (const name in pkg.allowLargePackages) {
+  for (const name in allowLargePackages) {
     packages++;
     assert(name);
     assert.equal(typeof name, 'string');
-    const config = pkg.allowLargePackages[name];
+    const config = allowLargePackages[name];
     assert(config);
     assert.equal(typeof config, 'object');
     assert(config.version);
@@ -94,15 +116,15 @@ test('should pkg.allowLargePackages work', () => {
 });
 
 test('should pkg.allowLargeScopes work', () => {
-  assert(pkg.allowLargeScopes);
-  assert.equal(typeof pkg.allowLargeScopes, 'object');
+  assert(allowLargeScopes);
+  assert(Array.isArray(allowLargeScopes), 'allowLargeScopes should be an array');
   let scopes = 0;
-  for (const name of pkg.allowLargeScopes) {
+  for (const name of allowLargeScopes) {
     scopes++;
     assert(name);
     assert.equal(typeof name, 'string');
     assert.match(name, /^@.+/);
-    assert.equal(pkg.allowLargeScopes.filter(n => n === name).length, 1, `"${name}" is duplicate`);
+    assert.equal(allowLargeScopes.filter(n => n === name).length, 1, `"${name}" is duplicate`);
   }
   console.log('Total %d large scopes', scopes);
   assert(scopes > 0);
@@ -110,10 +132,10 @@ test('should pkg.allowLargeScopes work', () => {
 
 test('check allowLargePackages and allowLargeScopes', () => {
   const duplicatedPackages = new Map();
-  for (const name in pkg.allowLargePackages) {
+  for (const name in allowLargePackages) {
     if (name.startsWith('@')) {
       const [scope] = name.split('/');
-      if (pkg.allowLargeScopes.includes(scope)) {
+      if (allowLargeScopes.includes(scope)) {
         duplicatedPackages.set(scope, [
           ...(duplicatedPackages.get(scope) || []),
           name
@@ -131,41 +153,41 @@ test('check allowLargePackages and allowLargeScopes', () => {
 });
 
 test('should pkg.blockSyncScopes work', () => {
-  assert(pkg.blockSyncScopes);
-  assert.equal(typeof pkg.blockSyncScopes, 'object');
+  assert(blockSyncScopes);
+  assert(Array.isArray(blockSyncScopes), 'blockSyncScopes should be an array');
   let scopes = 0;
-  for (const name of pkg.blockSyncScopes) {
+  for (const name of blockSyncScopes) {
     scopes++;
     assert(name);
     assert.equal(typeof name, 'string');
     assert.match(name, /^@.+/);
-    assert.equal(pkg.blockSyncScopes.filter(n => n === name).length, 1, `"${name}" is duplicate`);
+    assert.equal(blockSyncScopes.filter(n => n === name).length, 1, `"${name}" is duplicate`);
   }
   console.log('Total %d block sync scopes', scopes);
   assert(scopes > 0);
 });
 
 test('should pkg.blockSyncPackages work', () => {
-  assert(pkg.blockSyncPackages);
-  assert.equal(typeof pkg.blockSyncPackages, 'object');
+  assert(blockSyncPackages);
+  assert(Array.isArray(blockSyncPackages), 'blockSyncPackages should be an array');
   let packages = 0;
-  for (const name of pkg.blockSyncPackages) {
+  for (const name of blockSyncPackages) {
     packages++;
     assert(name);
     assert.equal(typeof name, 'string');
-    assert.equal(pkg.blockSyncPackages.filter(n => n === name).length, 1, `"${name}" is duplicate`);
+    assert.equal(blockSyncPackages.filter(n => n === name).length, 1, `"${name}" is duplicate`);
   }
   console.log('Total %d block sync packages', packages);
   assert(packages > 0);
-  assert(pkg.blockSyncPackages.length === packages, 'blockSyncPackages length should be equal to packages length');
+  assert(blockSyncPackages.length === packages, 'blockSyncPackages length should be equal to packages length');
 });
 
 test('check blockSyncPackages and blockSyncScopes', () => {
   const duplicatedPackages = new Map();
-  for (const name of pkg.blockSyncPackages) {
+  for (const name of blockSyncPackages) {
     if (name.startsWith('@')) {
       const [scope] = name.split('/');
-      if (pkg.blockSyncScopes.includes(scope)) {
+      if (blockSyncScopes.includes(scope)) {
         duplicatedPackages.set(scope, [
           ...(duplicatedPackages.get(scope) || []),
           name
