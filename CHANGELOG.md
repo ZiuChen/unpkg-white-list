@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.301.0 (2026-05-07)
+
+* feat: Add mapnik core packages to large package whitelist (#570) ([061e0d4](https://github.com/cnpm/unpkg-white-list/commit/061e0d4)), closes [#570](https://github.com/cnpm/unpkg-white-list/issues/570)
+
 ## 1.300.0 (2026-05-07)
 
 * feat: Add cesium package to allowLargePackages.json (#568) ([d11cafe](https://github.com/cnpm/unpkg-white-list/commit/d11cafe)), closes [#568](https://github.com/cnpm/unpkg-white-list/issues/568)
