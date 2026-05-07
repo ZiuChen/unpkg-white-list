@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.300.0 (2026-05-07)
+
+* feat: Add cesium package to allowLargePackages.json (#568) ([d11cafe](https://github.com/cnpm/unpkg-white-list/commit/d11cafe)), closes [#568](https://github.com/cnpm/unpkg-white-list/issues/568)
+
 ## <small>1.299.1 (2026-05-07)</small>
 
 * fix: drop postpack so registry packument keeps the merged lists (#569) ([bb053cb](https://github.com/cnpm/unpkg-white-list/commit/bb053cb)), closes [#569](https://github.com/cnpm/unpkg-white-list/issues/569)
