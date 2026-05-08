@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.302.0 (2026-05-08)
+
+* feat: add happy to allowLargePackages (#571) ([532b814](https://github.com/cnpm/unpkg-white-list/commit/532b814)), closes [#571](https://github.com/cnpm/unpkg-white-list/issues/571)
+
 ## 1.301.0 (2026-05-07)
 
 * feat: Add mapnik core packages to large package whitelist (#570) ([061e0d4](https://github.com/cnpm/unpkg-white-list/commit/061e0d4)), closes [#570](https://github.com/cnpm/unpkg-white-list/issues/570)
